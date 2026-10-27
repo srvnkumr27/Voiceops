@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ZentroMart support</title>
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Mukta:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F1F4F2; --card:#FFFFFF; --ink:#0E1B17; --soft:#4A5A54; --rule:#D9E1DD; --wash:#E8EEEB;
+  --pine:#0C6B58; --pine-ink:#FFFFFF; --pine-wash:#DDF1EA; --pine-deep:#0A4D40;
+  --saffron:#E4571C; --saffron-wash:#FCE6DB;
+  --turmeric-wash:#FBEFD0; --turmeric-ink:#6B4A00; --turmeric:#D9990F;
+  --chilli-wash:#F7DDD9; --chilli-ink:#7C241B; --chilli:#B5443A;
+  --user:#0E1B17; --user-ink:#FFFFFF;
+  --shadow:0 1px 2px rgba(14,27,23,.06),0 6px 20px rgba(14,27,23,.06);
+  --display:"Bricolage Grotesque","Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
+  --body:"Mukta","Segoe UI Variable Text","Segoe UI","Nirmala UI",system-ui,sans-serif;
+}
+:root[data-theme="dark"]{
+  --paper:#0A1311; --card:#111E1A; --ink:#E7F0EC; --soft:#9DB1A9; --rule:#22362F; --wash:#182823;
+  --pine:#3CC4A3; --pine-ink:#062A22; --pine-wash:#143A31; --pine-deep:#8FE3CE;
+  --saffron:#FF8A57; --saffron-wash:#3A2118;
+  --turmeric-wash:#3A2F10; --turmeric-ink:#F2D58A; --turmeric:#E7A91A;
+  --chilli-wash:#3C1B18; --chilli-ink:#F3B1AA; --chilli:#E07A6F;
+  --user:#E7F0EC; --user-ink:#0A1311;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--body);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--pine);outline-offset:2px;border-radius:6px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+.app{display:grid;grid-template-columns:minmax(0,1fr) 380px;grid-template-rows:auto minmax(0,1fr);height:100dvh}
+header{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:10px 20px;border-bottom:1px solid var(--rule);background:var(--card)}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto;min-width:0}
+.mark{width:34px;height:34px;border-radius:10px;background:var(--pine);color:var(--pine-ink);display:grid;place-items:center;font:700 19px var(--display)}
+.brand b{font:700 18px/1.1 var(--display);letter-spacing:-.01em;display:block}
+.brand small{display:block;color:var(--soft);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.switch{display:inline-flex;align-items:center;gap:8px;background:none;border:0;padding:6px 4px;color:var(--soft);font-weight:500;font-size:14px}
+.switch .track{width:34px;height:20px;border-radius:20px;background:var(--rule);position:relative;transition:background .15s}
+.switch .track::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--card);box-shadow:0 1px 2px rgba(0,0,0,.3);transition:transform .15s}
+.switch[aria-checked="true"]{color:var(--ink)}
+.switch[aria-checked="true"] .track{background:var(--pine)}
+.switch[aria-checked="true"] .track::after{transform:translateX(14px)}
+.btn,.switch{white-space:nowrap}
+.brand b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btn{border:1px solid var(--rule);background:var(--card);border-radius:10px;padding:7px 13px;font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:7px}
+.btn:hover{background:var(--wash)}
+.btn.icon{padding:7px 9px}
+.btn svg,.ic{width:18px;height:18px;flex:none}
+#caseBtn{display:none;position:relative}
+#caseBtn .dot{position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:var(--saffron);display:none}
+#caseBtn.new .dot{display:block}
+
+.stage{position:relative;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+#ripples{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.thread{position:relative;z-index:1;flex:1;overflow:auto;padding:22px clamp(16px,6vw,72px) 12px;scroll-behavior:smooth}
+.thread-inner{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:14px;min-height:100%}
+.hero{margin:auto 0;padding:8px 0 24px}
+.hero h1{font:700 clamp(30px,5vw,46px)/1.05 var(--display);letter-spacing:-.025em;margin:0 0 10px;max-width:13em}
+.hero p{margin:0 0 20px;color:var(--soft);font-size:17px;max-width:30em}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--rule);background:var(--card);border-radius:999px;padding:7px 14px;font-size:14.5px;font-weight:500}
+.chip:hover{border-color:var(--pine);color:var(--pine-deep)}
+.thread.has .hero{display:none}
+
+.msg{display:flex;flex-direction:column;max-width:86%}
+.msg.user{align-self:flex-end;align-items:flex-end}
+.bubble{padding:10px 14px;border-radius:16px;box-shadow:var(--shadow);overflow-wrap:anywhere;white-space:pre-wrap}
+.user .bubble{background:var(--user);color:var(--user-ink);border-bottom-right-radius:5px}
+.bot .bubble{background:var(--card);border:1px solid var(--rule);border-bottom-left-radius:5px}
+.bubble .via{display:inline-flex;vertical-align:-3px;margin-right:6px;opacity:.7}
+.bubble.muted{font-style:italic;opacity:.8}
+.bot.selected .bubble{border-color:var(--pine);box-shadow:0 0 0 2px var(--pine-wash),var(--shadow)}
+.meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:6px;font-size:12.5px;color:var(--soft)}
+.badge{padding:2px 9px;border-radius:999px;font-weight:600;font-size:12.5px}
+.b-answer{background:var(--pine-wash);color:var(--pine-deep)}
+.b-clarify{background:var(--turmeric-wash);color:var(--turmeric-ink)}
+.b-refuse{background:var(--chilli-wash);color:var(--chilli-ink)}
+.b-escalate{background:var(--ink);color:var(--paper)}
+.link{background:none;border:0;padding:2px 4px;color:var(--soft);font-weight:600;font-size:12.5px;display:inline-flex;align-items:center;gap:4px;border-radius:6px}
+.link:hover{color:var(--ink);background:var(--wash)}
+.ticket{margin-top:8px;border:1px solid var(--ink);border-radius:12px;padding:9px 12px;background:var(--card);display:flex;gap:10px;align-items:center;font-size:14px}
+.ticket b{font-weight:700}
+.ticket code{font:600 13px ui-monospace,Consolas,monospace;background:var(--wash);padding:1px 6px;border-radius:6px}
+.pending .dots{display:inline-flex;gap:4px;padding:4px 0}
+.pending .dots i{width:7px;height:7px;border-radius:50%;background:var(--soft);opacity:.4;animation:b 1s infinite}
+.pending .dots i:nth-child(2){animation-delay:.15s}.pending .dots i:nth-child(3){animation-delay:.3s}
+@keyframes b{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+.stagetxt{margin-left:8px;color:var(--soft);font-size:13.5px}
+
+.composer{position:relative;z-index:2;padding:6px clamp(16px,6vw,72px) calc(14px + env(safe-area-inset-bottom));}
+.dock{display:flex;flex-direction:column;align-items:center;gap:4px;padding-bottom:10px}
+.mic{width:72px;height:72px;border-radius:50%;border:0;background:var(--pine);color:var(--pine-ink);display:grid;place-items:center;box-shadow:0 6px 18px rgba(12,107,88,.35);transition:background .15s,transform .15s;position:relative}
+.mic:hover:not(:disabled){transform:scale(1.04)}
+.mic:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.mic svg{width:30px;height:30px}
+.mic.rec{background:var(--saffron);color:#fff;box-shadow:0 6px 18px rgba(228,87,28,.4)}
+.mic::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:3px solid transparent;pointer-events:none}
+.mic.rec::after{border-color:color-mix(in srgb,var(--saffron) calc(var(--level,0)*100%),transparent)}
+.status{min-height:22px;font-size:14px;color:var(--soft);text-align:center}
+.inputrow{display:flex;gap:8px;max-width:720px;margin:0 auto;align-items:flex-end;background:var(--card);border:1px solid var(--rule);border-radius:16px;padding:6px 6px 6px 14px;box-shadow:var(--shadow)}
+.inputrow:focus-within{border-color:var(--pine)}
+textarea{flex:1;border:0;outline:0;background:none;resize:none;font:inherit;color:inherit;padding:8px 0;max-height:120px;min-height:24px}
+textarea::placeholder{color:var(--soft);opacity:.8}
+.send{border:0;background:var(--ink);color:var(--paper);border-radius:11px;width:40px;height:40px;display:grid;place-items:center}
+.send:disabled{opacity:.35;cursor:not-allowed}
+.iconbtn{border:0;background:none;color:var(--soft);width:40px;height:40px;border-radius:11px;display:grid;place-items:center}
+.iconbtn:hover{background:var(--wash);color:var(--ink)}
+.fine{max-width:720px;margin:8px auto 0;text-align:center;font-size:12.5px;color:var(--soft)}
+
+aside.case{background:var(--card);border-left:1px solid var(--rule);overflow:auto;padding:16px 18px 24px;min-height:0}
+.case h2{font:700 18px var(--display);margin:0 0 12px;display:flex;align-items:center;justify-content:space-between}
+.case h3{font:600 14px var(--body);color:var(--soft);margin:20px 0 8px}
+.case .x{display:none}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;align-items:center;font-size:14.5px}
+.kv dt{color:var(--soft)}.kv dd{margin:0;font-weight:600;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;padding:1px 9px;border-radius:999px;font-weight:600;font-size:13px;background:var(--wash);color:var(--soft)}
+.pill.ok{background:var(--pine-wash);color:var(--pine-deep)}.pill.wait{background:var(--turmeric-wash);color:var(--turmeric-ink)}.pill.bad{background:var(--chilli-wash);color:var(--chilli-ink)}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.steps li{display:grid;grid-template-columns:18px 1fr auto;gap:10px;align-items:center;font-size:14.5px}
+.steps .d{width:10px;height:10px;border-radius:50%;background:var(--pine);justify-self:center}
+.steps li.skip{color:var(--soft)}.steps li.skip .d{background:transparent;border:2px solid var(--rule)}
+.steps li.live .d{background:var(--saffron);box-shadow:0 0 0 4px var(--saffron-wash)}
+.steps .t{font-variant-numeric:tabular-nums;color:var(--soft);font-size:13.5px}
+.total{margin-top:8px;font-size:13.5px;color:var(--soft)}
+.src{border:1px solid var(--rule);border-radius:10px;margin-bottom:6px;background:var(--card)}
+.src summary{cursor:pointer;list-style:none;padding:8px 10px;display:flex;gap:8px;align-items:baseline;font-size:14px}
+.src summary::-webkit-details-marker{display:none}
+.src .id{font:700 12.5px ui-monospace,Consolas,monospace;padding:1px 6px;border-radius:6px;background:var(--wash)}
+.src.used .id{background:var(--pine-wash);color:var(--pine-deep)}
+.src .tt{flex:1;min-width:0}
+.src .u{font-size:12px;color:var(--pine-deep);font-weight:600}
+.src .body{padding:0 10px 10px;font-size:13.5px;color:var(--soft);white-space:pre-wrap}
+.src .warn{color:var(--chilli-ink);font-weight:600}
+.tool{font:500 13px ui-monospace,Consolas,monospace;background:var(--wash);padding:5px 8px;border-radius:8px;margin-bottom:5px;overflow-wrap:anywhere}
+.empty{color:var(--soft);font-size:14.5px}
+.resolved{font-size:14.5px;background:var(--wash);border-radius:10px;padding:8px 10px}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:12px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.2s;z-index:50;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.scrim{display:none}
+
+@media (max-width:980px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  #caseBtn{display:inline-flex}
+  aside.case{position:fixed;left:0;right:0;bottom:0;max-height:80dvh;border:1px solid var(--rule);border-radius:20px 20px 0 0;transform:translateY(105%);transition:transform .25s;z-index:30;box-shadow:0 -10px 40px rgba(0,0,0,.25)}
+  aside.case.open{transform:none}
+  .case .x{display:inline-grid}
+  .scrim.show{display:block;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:20}
+  header{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:2px 8px;padding:8px 12px;align-items:center}
+  .brand{margin:0;min-width:0}.brand>div:last-child{min-width:0}
+  .brand small{display:none}
+  .btn .t{display:none}
+  #caseBtn,#newCall{padding:7px 9px}
+  .switch{grid-row:2;padding:4px 0;font-size:13.5px}
+  #swHands{grid-column:1}
+  #swAloud{grid-column:2/5;justify-self:start;margin-left:6px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.thread{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand"><div class="mark" aria-hidden="true">Z</div><div><b>ZentroMart support</b><small id="sub">AI assistant, speech by Gnani</small></div></div>
+    <button class="switch" id="swHands" role="switch" aria-label="Hands-free" aria-checked="false" title="After each spoken reply, start listening again"><span class="track"></span><span class="lbl">Hands-free</span></button>
+    <button class="switch" id="swAloud" role="switch" aria-label="Read aloud" aria-checked="false" title="Also speak replies to typed messages"><span class="track"></span><span class="lbl">Read aloud</span></button>
+    <button class="btn icon" id="theme" aria-label="Switch theme"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+    <button class="btn" id="caseBtn" aria-controls="case" aria-label="Case file"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4zM4 9h16M9 9v11"/></svg><span class="t">Case file</span><span class="dot"></span></button>
+    <button class="btn" id="newCall" aria-label="New call"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg><span class="t">New call</span></button>
+  </header>
+
+  <main class="stage" id="stage">
+    <canvas id="ripples" aria-hidden="true"></canvas>
+    <div class="thread" id="thread" role="log" aria-live="polite" aria-label="Conversation">
+      <div class="thread-inner" id="inner">
+        <section class="hero" id="hero">
+          <h1>How can we help today?</h1>
+          <p>Tap the microphone and ask about an order, a return or a refund. You can type instead.</p>
+          <div class="chips" id="chips"></div>
+        </section>
+      </div>
+    </div>
+    <div class="composer">
+      <div class="dock">
+        <button class="mic" id="mic" aria-label="Start talking"></button>
+        <div class="status" id="status" aria-live="polite">Tap to talk</div>
+      </div>
+      <form class="inputrow" id="form" autocomplete="off">
+        <label class="iconbtn" title="Send an audio file" style="cursor:pointer"><span class="sr">Send an audio file</span>
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.5l-8.6 8.6a5.5 5.5 0 0 1-7.8-7.8l9-9a3.7 3.7 0 0 1 5.2 5.2l-9 9a1.8 1.8 0 0 1-2.6-2.6l8.3-8.3"/></svg>
+          <input type="file" id="file" accept="audio/*" class="sr"></label>
+        <textarea id="msg" rows="1" placeholder="Type a message" aria-label="Message"></textarea>
+        <button class="send" id="send" type="submit" aria-label="Send message" disabled><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+      </form>
+      <div class="fine">Replies come from an AI assistant and ZentroMart's policy documents.</div>
+    </div>
+  </main>
+
+  <aside class="case" id="case" aria-label="Case file">
+    <h2>Case file <button class="btn icon x" id="caseX" aria-label="Close case file"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></h2>
+    <div id="caseBody"></div>
+  </aside>
+</div>
+<div class="scrim" id="scrim"></div>
+<div class="toast" id="toast" role="status"></div>
+<audio id="player" preload="auto"></audio>
+
+<script>
+"use strict";
+const $ = s => document.querySelector(s);
+const ICON = {
+  mic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
+  stop:'<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6.5" y="6.5" width="11" height="11" rx="2.5"/></svg>',
+  play:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4zM15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
+  via:'<svg class="ic" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 10v4M8 6v12M12 3v18M16 7v10M20 10v4"/></svg>'
+};
+const store = {
+  get(k, d){ try { const v = localStorage.getItem(k); return v === null ? d : v; } catch(e){ return d; } },
+  set(k, v){ try { localStorage.setItem(k, v); } catch(e){} }
+};
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)).replace(/[^A-Za-z0-9_-]/g, '').slice(0, 40).padEnd(8, 'x');
+
+let sid = uid(), cfg = {voice:{available:false}}, busy = false, rec = null, turns = [], selected = -1, aborter = null;
+let hands = store.get('hands','0') === '1', aloud = store.get('aloud','0') === '1';
+const LANG = {en:'English', hi:'हिन्दी', 'hi-en':'Hinglish', mr:'मराठी', ta:'தமிழ்', te:'తెలుగు', kn:'ಕನ್ನಡ', ml:'മലയാളം', gu:'ગુજરાતી', bn:'বাংলা', pa:'ਪੰਜਾਬੀ'};
+const DECISION = {answer:['Answer','b-answer'], clarify:['Needs a detail','b-clarify'], refuse:['Not allowed','b-refuse'], escalate:['Handed to a person','b-escalate']};
+
+/* ---------- theme ---------- */
+function setTheme(t){ document.documentElement.dataset.theme = t; store.set('theme', t); }
+setTheme(store.get('theme', matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+$('#theme').onclick = () => { setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'); };
+
+/* ---------- toggles ---------- */
+function paintSwitch(el, on){ el.setAttribute('aria-checked', on ? 'true' : 'false'); }
+paintSwitch($('#swHands'), hands); paintSwitch($('#swAloud'), aloud);
+$('#swHands').onclick = () => { hands = !hands; store.set('hands', hands ? '1':'0'); paintSwitch($('#swHands'), hands); };
+$('#swAloud').onclick = () => { aloud = !aloud; store.set('aloud', aloud ? '1':'0'); paintSwitch($('#swAloud'), aloud); };
+
+/* ---------- toast / status ---------- */
+let toastT;
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 4500); }
+function status(msg){ $('#status').textContent = msg; }
+
+/* ---------- ripples: the one memorable thing ---------- */
+const cv = $('#ripples'), cx = cv.getContext('2d');
+const ripple = {mode:'idle', level:0, rings:[], last:0, raf:0, angle:0, t:0};
+function sizeCanvas(){ const r = cv.getBoundingClientRect(), d = devicePixelRatio || 1; cv.width = r.width * d; cv.height = r.height * d; cx.setTransform(d,0,0,d,0,0); }
+addEventListener('resize', sizeCanvas); sizeCanvas();
+function color(name, a){ const c = getComputedStyle(document.documentElement).getPropertyValue(name).trim(); const n = parseInt(c.slice(1), 16); return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`; }
+function setMode(m){ ripple.mode = m; if (!ripple.raf) { ripple.t = performance.now(); ripple.raf = requestAnimationFrame(tick); } document.body.dataset.mode = m; }
+function tick(now){
+  const dt = Math.min(.05, (now - ripple.t) / 1000); ripple.t = now;
+  const r = cv.getBoundingClientRect(), b = $('#mic').getBoundingClientRect();
+  const x = b.left + b.width/2 - r.left, y = b.top + b.height/2 - r.top, R = b.width/2;
+  cx.clearRect(0, 0, r.width, r.height);
+  const talking = ripple.mode === 'user' || ripple.mode === 'agent';
+  if (talking && !reduced && ripple.level > .05 && now - ripple.last > 190 - ripple.level * 110) {
+    ripple.last = now;
+    ripple.rings.push({r: R + 4, a: .25 + ripple.level * .45, v: 70 + ripple.level * 170, c: ripple.mode === 'user' ? '--saffron' : '--pine'});
+  }
+  for (const g of ripple.rings) { g.r += g.v * dt; g.a *= Math.exp(-dt * .95); }
+  ripple.rings = ripple.rings.filter(g => g.a > .012 && g.r < Math.max(r.width, r.height));
+  for (const g of ripple.rings) { cx.beginPath(); cx.arc(x, y, g.r, 0, 7); cx.lineWidth = 1.5 + g.a * 3; cx.strokeStyle = color(g.c, g.a); cx.stroke(); }
+  if (ripple.mode === 'think' && !reduced) {
+    ripple.angle += dt * 5; cx.beginPath(); cx.arc(x, y, R + 9, ripple.angle, ripple.angle + 1.7); cx.lineWidth = 3.5; cx.lineCap = 'round'; cx.strokeStyle = color('--pine', .9); cx.stroke();
+  }
+  ripple.level *= .9;
+  document.documentElement.style.setProperty('--level', Math.min(1, ripple.level).toFixed(2));
+  $('#mic').style.setProperty('--level', Math.min(1, ripple.level * 1.6).toFixed(2));
+  if (ripple.mode === 'idle' && !ripple.rings.length) { ripple.raf = 0; return; }
+  ripple.raf = requestAnimationFrame(tick);
+}
+
+/* ---------- audio plumbing (recording + playback levels). No browser speech APIs are used: Gnani does STT and TTS. ---------- */
+let actx;
+function ctxAudio(){ if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume(); return actx; }
+const player = $('#player'); let playerNode, playerAnalyser, playerBuf;
+function hookPlayer(){
+  if (playerNode) return; const c = ctxAudio();
+  try { playerNode = c.createMediaElementSource(player); playerAnalyser = c.createAnalyser(); playerAnalyser.fftSize = 512; playerBuf = new Uint8Array(playerAnalyser.fftSize); playerNode.connect(playerAnalyser); playerAnalyser.connect(c.destination); } catch(e){ playerNode = null; }
+}
+function rms(an, buf){ an.getByteTimeDomainData(buf); let s = 0; for (const v of buf) { const d = (v - 128) / 128; s += d*d; } return Math.sqrt(s / buf.length); }
+let playLoop = 0;
+function playUrl(url){
+  hookPlayer(); player.src = url; setMode('agent');
+  const pump = () => { if (playerAnalyser) ripple.level = Math.max(ripple.level, Math.min(1, rms(playerAnalyser, playerBuf) * 4.5)); else ripple.level = .5; playLoop = requestAnimationFrame(pump); };
+  player.onplay = () => { status('Speaking'); cancelAnimationFrame(playLoop); pump(); };
+  player.onended = player.onpause = () => { cancelAnimationFrame(playLoop); if (!busy && !rec) { setMode('idle'); status('Tap to talk'); } if (player.ended && hands && !busy && !rec) startRec(); };
+  return player.play().catch(() => { setMode('idle'); status('Tap the speaker on a reply to hear it'); });
+}
+
+/* ---------- WAV encoding: record anything, send 16 kHz mono 16-bit PCM ---------- */
+async function toWav16k(blob){
+  const buf = await blob.arrayBuffer(); const c = ctxAudio();
+  const audio = await new Promise((ok, no) => { const p = c.decodeAudioData(buf, ok, no); if (p && p.catch) p.catch(no); });
+  const off = new OfflineAudioContext(1, Math.max(1, Math.ceil(audio.duration * 16000)), 16000);
+  const s = off.createBufferSource(); s.buffer = audio; s.connect(off.destination); s.start();
+  const pcm = (await off.startRendering()).getChannelData(0);
+  const out = new DataView(new ArrayBuffer(44 + pcm.length * 2)), w = (o, t) => [...t].forEach((ch, i) => out.setUint8(o + i, ch.charCodeAt(0)));
+  w(0,'RIFF'); out.setUint32(4, 36 + pcm.length*2, true); w(8,'WAVE'); w(12,'fmt '); out.setUint32(16,16,true); out.setUint16(20,1,true); out.setUint16(22,1,true);
+  out.setUint32(24,16000,true); out.setUint32(28,32000,true); out.setUint16(32,2,true); out.setUint16(34,16,true); w(36,'data'); out.setUint32(40, pcm.length*2, true);
+  for (let i = 0; i < pcm.length; i++) out.setInt16(44 + i*2, Math.max(-1, Math.min(1, pcm[i])) * 32767, true);
+  return new Blob([out], {type:'audio/wav'});
+}
+
+/* ---------- recording with silence detection ---------- */
+const MAX_REC_MS = 55000;
+async function startRec(){
+  if (busy || rec) return;
+  if (!cfg.voice.available) { toast(cfg.voice.reason || 'Voice is not available. You can type instead.'); return; }
+  player.pause();
+  let stream;
+  try { stream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true, noiseSuppression:true, autoGainControl:true, channelCount:1}}); }
+  catch(e){ toast(e && e.name === 'NotFoundError' ? 'No microphone found. Plug one in, or type instead.' : 'Microphone is blocked. Allow it in the address bar, then tap the mic again.'); status('Tap to talk'); return; }
+  const c = ctxAudio(), src = c.createMediaStreamSource(stream), an = c.createAnalyser(); an.fftSize = 1024; src.connect(an);
+  const buf = new Uint8Array(an.fftSize), chunks = [];
+  const mime = ['audio/webm;codecs=opus','audio/webm','audio/mp4'].find(t => window.MediaRecorder && MediaRecorder.isTypeSupported(t));
+  const mr = new MediaRecorder(stream, mime ? {mimeType:mime, audioBitsPerSecond:64000} : undefined);
+  mr.ondataavailable = e => e.data.size && chunks.push(e.data);
+  const r = rec = {mr, stream, started:performance.now(), spoke:false, lastVoice:0, floor:.01, cancel:false, timer:0};
+  mr.onstop = async () => {
+    cancelAnimationFrame(r.timer); stream.getTracks().forEach(t => t.stop()); src.disconnect(); rec = null; paintMic();
+    if (r.cancel) { setMode('idle'); status('Tap to talk'); return; }
+    if (!r.spoke) { setMode('idle'); status('Tap to talk'); hands = false; paintSwitch($('#swHands'), false); toast("Didn't hear anything. Move closer to the mic and try again."); return; }
+    try { const wav = await toWav16k(new Blob(chunks, {type: mr.mimeType})); sendVoice(wav, 'speech.wav'); }
+    catch(e){ setMode('idle'); status('Tap to talk'); toast("Couldn't read that recording. Try again, or type instead."); }
+  };
+  mr.start(250); paintMic(); setMode('user'); status('Listening. Tap again when you are done.');
+  const loop = () => {
+    if (rec !== r) return;
+    const v = rms(an, buf), now = performance.now(), el = now - r.started;
+    if (el < 350) r.floor = Math.max(r.floor, v * 1.0);
+    const thr = Math.max(.02, r.floor * 2.6);
+    ripple.level = Math.max(ripple.level, Math.min(1, v * 5));
+    if (v > thr) { r.spoke = true; r.lastVoice = now; }
+    if (r.spoke && now - r.lastVoice > 1500 && el > 900) return stopRec();
+    if (!r.spoke && el > 8000) return stopRec();
+    if (el > MAX_REC_MS) return stopRec();
+    r.timer = requestAnimationFrame(loop);
+  };
+  loop();
+}
+function stopRec(cancel){ if (rec && rec.mr.state !== 'inactive') { rec.cancel = !!cancel; rec.mr.stop(); } }
+function paintMic(){
+  const m = $('#mic'); m.classList.toggle('rec', !!rec); m.innerHTML = rec ? ICON.stop : ICON.mic;
+  m.setAttribute('aria-label', rec ? 'Stop and send' : 'Start talking'); m.setAttribute('aria-pressed', rec ? 'true' : 'false'); m.disabled = busy || !cfg.voice.available;
+  m.title = cfg.voice.available ? '' : (cfg.voice.reason || '');
+}
+$('#mic').onclick = () => { ctxAudio(); rec ? stopRec() : startRec(); };
+addEventListener('keydown', e => { if (e.key === 'Escape') { if (rec) stopRec(true); closeCase(); } });
+
+/* ---------- conversation rendering ---------- */
+const inner = $('#inner'), thread = $('#thread');
+function el(tag, cls, html){ const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function scroll(){ thread.scrollTop = thread.scrollHeight; }
+function addUser(text, viaVoice){
+  thread.classList.add('has'); const m = el('div', 'msg user'); const b = el('div', 'bubble' + (text ? '' : ' muted'));
+  b.innerHTML = (viaVoice ? `<span class="via">${ICON.via}</span>` : '') + esc(text || "Couldn't make that out");
+  m.append(b); inner.append(m); scroll(); return b;
+}
+const STAGE_TXT = {transcribing:'Listening to your recording', understanding:'Understanding the question', retrieving:'Checking our policies', writing:'Writing the reply', speaking:'Preparing the voice'};
+function addPending(){
+  const m = el('div', 'msg bot pending'); m.append(el('div', 'bubble', '<span class="dots"><i></i><i></i><i></i></span><span class="stagetxt"></span>')); inner.append(m); scroll(); return m;
+}
+function fillBot(m, rep, turn){
+  m.classList.remove('pending'); const b = m.querySelector('.bubble'); b.textContent = rep.text;
+  const [label, cls] = DECISION[rep.decision] || DECISION.answer; const meta = el('div', 'meta');
+  meta.append(el('span', 'badge ' + cls, label));
+  if (rep.sources.length) { const s = el('button', 'link', `${rep.used.length || rep.sources.length} source${(rep.used.length || rep.sources.length) === 1 ? '' : 's'}`); s.onclick = () => { select(turn.i); openCase(); }; meta.append(s); }
+  m.append(meta);
+  if (rep.ticket) { const t = el('div', 'ticket', `<div><b>Handed to a person.</b> A colleague will contact you with this summary.</div><code>${esc(rep.ticket.id.slice(0, 11))}</code>`); m.append(t); }
+  m.onclick = e => { if (!e.target.closest('button')) select(turn.i); };
+  turn.meta = meta; turn.node = m;
+}
+function addReplayButton(turn){
+  if (!turn.audio || !turn.meta || turn.meta.querySelector('.replay')) return;
+  const b = el('button', 'link replay', ICON.play + 'Play'); b.onclick = () => { ctxAudio(); playUrl(turn.audio); }; turn.meta.prepend(b);
+}
+
+/* ---------- case file ---------- */
+function section(title, node){ const f = document.createDocumentFragment(); f.append(el('h3', null, title), node); return f; }
+function renderCase(){
+  const body = $('#caseBody'); body.innerHTML = ''; const t = turns[selected];
+  if (!t) { body.append(el('p', 'empty', 'Nothing here yet. Your order, the policies used and any handover show up as the call goes on.')); return; }
+  const s = (t.reply && t.reply.session) || {}; const id = s.order_id ? s.order_id.replace(/(\d{4})(?=\d)/g, '$1 ') : null;
+  const verify = s.locked ? ['Locked', 'bad'] : s.verified ? ['Verified', 'ok'] : s.awaiting ? ['Waiting for code', 'wait'] : ['Not needed yet', ''];
+  const kv = el('dl', 'kv', `<dt>Order</dt><dd>${id ? esc(id) : '<span class="pill">Not given</span>'}</dd><dt>Identity</dt><dd><span class="pill ${verify[1]}">${verify[0]}</span></dd><dt>Language</dt><dd>${esc(LANG[s.language] || s.language || '')}</dd>`);
+  body.append(section('Caller', kv));
+  // timeline from the stage marks the page recorded
+  const m = t.marks, order = [['Hear', 'start', 'heard'], ['Understand', 'understanding', 'retrieving'], ['Look up policy', 'retrieving', 'writing'], ['Write reply', 'writing', 'reply'], ['Speak', 'speaking', 'audio']];
+  const ul = el('ul', 'steps'); let any = false;
+  for (const [name, a, z] of order) {
+    const live = t.pending && m[a] && !m[z]; const done = m[a] != null && m[z] != null;
+    if (name === 'Hear' && !t.voice) continue;
+    const dur = name === 'Hear' && t.timings.stt_ms != null ? t.timings.stt_ms : name === 'Speak' && t.timings.tts_ms != null ? t.timings.tts_ms : done ? Math.round(m[z] - m[a]) : null;
+    if (!done && !live && t.reply && !m.understanding && !m.writing && name !== 'Hear' && name !== 'Speak') continue;
+    if (!done && !live && (!t.pending && (name === 'Speak' ? !t.audio : true) && !(name === 'Hear' && t.voice))) { ul.append(el('li', 'skip', `<span class="d"></span><span>${name}</span><span class="t">skipped</span>`)); continue; }
+    any = true; ul.append(el('li', live ? 'live' : '', `<span class="d"></span><span>${name}</span><span class="t">${live ? '…' : dur != null ? (dur / 1000).toFixed(1) + ' s' : ''}</span>`));
+  }
+  body.append(section('This reply', ul));
+  if (t.reply && !m.understanding && !m.writing) body.append(el('div', 'total', 'Answered from a ready-made line. No language-model call was needed.'));
+  if (t.timings.total_ms) body.append(el('div', 'total', `Total ${(t.timings.total_ms / 1000).toFixed(1)} s${t.timings.agent_ms != null ? `, of which the agent ${(t.timings.agent_ms / 1000).toFixed(1)} s` : ''}`));
+  const rep = t.reply; if (!rep) return;
+  if (rep.analysis && rep.analysis.standalone && rep.analysis.standalone !== t.said) body.append(section('Understood as', el('div', 'resolved', esc(rep.analysis.standalone))));
+  const sw = el('div'); if (!rep.sources.length) sw.append(el('p', 'empty', 'No documents were needed for this reply.'));
+  for (const sr of rep.sources) {
+    const used = rep.used.includes(sr.id), d = el('details', 'src' + (used ? ' used' : ''));
+    d.innerHTML = `<summary><span class="id">${esc(sr.id)}</span><span class="tt">${esc(sr.title)}</span>${used ? '<span class="u">used</span>' : ''}</summary><div class="body">${sr.status === 'superseded' ? '<div class="warn">Older version, replaced by a newer policy.</div>' : ''}${esc(sr.snippet)}</div>`;
+    sw.append(d);
+  }
+  body.append(section('Policies checked', sw));
+  const tw = el('div'); if (!rep.tools.length) tw.append(el('p', 'empty', 'No tools were used.')); rep.tools.forEach(x => tw.append(el('div', 'tool', esc(x))));
+  body.append(section('Tools used', tw));
+  if (rep.ticket || rep.reasons.length) body.append(section('Handover', el('div', 'resolved', (rep.ticket ? `Ticket ${esc(rep.ticket.id)}.<br>` : '') + (rep.reasons.length ? 'Reason: ' + esc(rep.reasons.join(', ').replace(/_/g, ' ')) : ''))));
+}
+function select(i){ selected = i; document.querySelectorAll('.msg.bot').forEach(n => n.classList.remove('selected')); if (turns[i] && turns[i].node) turns[i].node.classList.add('selected'); renderCase(); $('#caseBtn').classList.remove('new'); }
+function openCase(){ $('#case').classList.add('open'); $('#scrim').classList.add('show'); }
+function closeCase(){ $('#case').classList.remove('open'); $('#scrim').classList.remove('show'); }
+$('#caseBtn').onclick = () => { $('#case').classList.contains('open') ? closeCase() : openCase(); }; $('#caseX').onclick = closeCase; $('#scrim').onclick = closeCase;
+
+/* ---------- talking to the server (streamed events) ---------- */
+async function runTurn(url, init, {said, voice}){
+  if (busy) return; busy = true; paintMic(); $('#send').disabled = true; aborter = new AbortController();
+  const userBubble = said != null ? addUser(said, voice) : null;
+  const pend = addPending(), label = pend.querySelector('.stagetxt');
+  const turn = {i: turns.length, marks:{start: performance.now()}, timings:{}, voice, pending:true, said: said || ''}; turns.push(turn); selected = turn.i; renderCase();
+  setMode('think'); status('Working on it');
+  let gotReply = false;
+  const on = ev => {
+    const now = performance.now();
+    if (ev.type === 'stage') { turn.marks[ev.stage] = now; label.textContent = STAGE_TXT[ev.stage] || ''; status((STAGE_TXT[ev.stage] || 'Working on it')); }
+    else if (ev.type === 'heard') { turn.marks.heard = now; turn.timings.stt_ms = ev.ms; turn.said = ev.text; userBubble.className = 'bubble' + (ev.text ? '' : ' muted'); userBubble.innerHTML = `<span class="via">${ICON.via}</span>` + esc(ev.text || "Couldn't make that out"); }
+    else if (ev.type === 'reply') { turn.marks.reply = now; turn.reply = ev.reply; Object.assign(turn.timings, ev.timings); gotReply = true; fillBot(pend, ev.reply, turn); scroll(); if (ev.reply.session) updateSub(ev.reply.session); if (!$('#case').classList.contains('open')) $('#caseBtn').classList.add('new'); }
+    else if (ev.type === 'audio') { turn.marks.audio = now; turn.audio = ev.url; turn.timings.tts_ms = ev.ms; addReplayButton(turn); playUrl(ev.url); }
+    else if (ev.type === 'done') { Object.assign(turn.timings, ev.timings); turn.pending = false; }
+    else if (ev.type === 'error') { throw new Error(ev.message); }
+    if (selected === turn.i) renderCase();
+  };
+  try {
+    const res = await fetch(url, {...init, signal: aborter.signal});
+    if (!res.ok) { let m = 'The server could not handle that.'; try { m = (await res.json()).error || m; } catch(e){} throw new Error(m); }
+    const rd = res.body.getReader(), dec = new TextDecoder(); let buf = '';
+    for (;;) { const {done, value} = await rd.read(); if (done) break; buf += dec.decode(value, {stream:true}); let n; while ((n = buf.indexOf('\n')) >= 0) { const line = buf.slice(0, n).trim(); buf = buf.slice(n + 1); if (line) on(JSON.parse(line)); } }
+    if (buf.trim()) on(JSON.parse(buf));
+  } catch(e){
+    if (e.name !== 'AbortError') { toast(e.message === 'Failed to fetch' ? "Can't reach the server. Check that app.py is still running, then try again." : e.message); if (!gotReply) { pend.remove(); if (userBubble && !turn.said) userBubble.closest('.msg').remove(); } }
+  } finally {
+    busy = false; turn.pending = false; aborter = null; paintMic(); updateSend();
+    if (player.paused || player.ended) { setMode('idle'); status('Tap to talk'); }
+    if (selected === turn.i) renderCase();
+  }
+}
+function sendText(text){ text = text.trim(); if (!text) return; ctxAudio(); runTurn('/api/chat', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({sid, message:text, speak: aloud && cfg.voice.available})}, {said:text, voice:false}); }
+function sendVoice(blob, name){ const fd = new FormData(); fd.append('sid', sid); fd.append('audio', blob, name); runTurn('/api/voice', {method:'POST', body: fd}, {said:'', voice:true}); }
+function updateSub(s){ $('#sub').textContent = s.verified ? 'Verified caller' : s.awaiting ? 'Waiting for your verification code' : 'AI assistant, speech by Gnani'; }
+
+/* ---------- composer ---------- */
+const msg = $('#msg');
+function updateSend(){ $('#send').disabled = busy || !msg.value.trim(); }
+msg.addEventListener('input', () => { msg.style.height = 'auto'; msg.style.height = Math.min(120, msg.scrollHeight) + 'px'; updateSend(); });
+msg.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('#form').requestSubmit(); } });
+$('#form').onsubmit = e => { e.preventDefault(); if (busy) return; const v = msg.value; msg.value = ''; msg.style.height = 'auto'; updateSend(); sendText(v); };
+$('#file').onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (!f) return; if (!cfg.voice.available) return toast(cfg.voice.reason || 'Voice is not available.'); ctxAudio(); sendVoice(f, f.name); };
+
+/* ---------- new call ---------- */
+$('#newCall').onclick = () => {
+  if (aborter) aborter.abort(); stopRec(true); player.pause(); fetch('/api/reset', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({sid})}).catch(() => {});
+  sid = uid(); turns = []; selected = -1; busy = false; inner.querySelectorAll('.msg').forEach(n => n.remove()); thread.classList.remove('has'); renderCase(); paintMic(); updateSend(); setMode('idle'); status('Tap to talk'); $('#sub').textContent = 'AI assistant, speech by Gnani'; closeCase();
+};
+
+/* ---------- start ---------- */
+(async function init(){
+  paintMic(); renderCase();
+  try { cfg = await (await fetch('/api/config')).json(); } catch(e){ toast("Can't reach the server. Check that app.py is running."); }
+  const chips = $('#chips'); (cfg.examples || []).forEach(t => { const b = el('button', 'chip'); b.textContent = t; b.onclick = () => sendText(t); chips.append(b); });
+  paintMic(); status(cfg.voice.available ? 'Tap to talk' : 'Voice is off. You can type below.');
+  if (!cfg.voice.available && cfg.voice.reason) $('#mic').title = cfg.voice.reason;
+})();
+</script>
+</body>
+</html>

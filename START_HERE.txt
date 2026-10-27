@@ -1,0 +1,10 @@
+1. Open THIS folder (the one containing run.py) in VS Code: File > Open Folder.
+2. Open the file named .env and paste your Gnani key and Gemini key after the = signs. Save.
+3. Terminal > New Terminal, then run these in order (Windows PowerShell):
+     python -m venv .venv
+     .venv\Scripts\Activate.ps1
+     pip install -r requirements.txt pytest
+     python -m pytest tests -q
+     python evaluate.py step2 --limit 10
+     python app.py
+(Mac/Linux: use  source .venv/bin/activate  instead of the Activate.ps1 line.)

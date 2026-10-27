@@ -1,0 +1,10 @@
+requests>=2.31
+gnani-vachana>=0.8.2
+# web UI (python app.py)
+fastapi>=0.110
+uvicorn>=0.29
+python-multipart>=0.0.9
+# optional: only for the legacy demo app_gradio.py
+# gradio>=4.0
+# optional: dense multilingual embeddings for hybrid retrieval (large download).
+# pip install sentence-transformers numpy
